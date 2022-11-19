@@ -2,7 +2,7 @@ import { IsString, MinLength, Matches } from 'class-validator';
 export class CreateUserDto {
   @IsString()
   @MinLength(4)
-  name: string;
+  username: string;
 
   @IsString()
   @MinLength(8)
