@@ -3,7 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AccountService } from '../account/account.service';
-import { Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { User } from './entities/user.entity';
 import { BcryptUtil } from '../../utils/bcrypt.util';
@@ -75,6 +74,14 @@ export class UsersService {
         HttpStatus.NOT_FOUND,
       );
     return user;
+  }
+
+  async findOneByUsername(username: string) {
+    return await this.prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {

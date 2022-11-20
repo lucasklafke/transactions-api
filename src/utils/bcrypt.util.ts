@@ -12,7 +12,7 @@ export class BcryptUtil {
     const hash = bcrypt.hashSync(password, this.salt);
     return hash;
   }
-  public decrypt(hash: string, password: string) {
+  public decrypt(password: string, hash: string) {
     return bcrypt.compareSync(password, hash);
   }
 }
