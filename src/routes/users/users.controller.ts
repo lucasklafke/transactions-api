@@ -6,28 +6,26 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AccountService } from '../account/account.service';
-import { Account } from 'src/account/entities/account.entity';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly accountService: AccountService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUserDto) {
-    const account = await this.accountService.create();
-    return this.usersService.create(createUserDto, account.id);
+    return this.usersService.create(createUserDto);
   }
 
   @Get()
-  findAll() {
+  asyncfindAll() {
     return this.usersService.findAll();
   }
 
@@ -42,6 +40,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
