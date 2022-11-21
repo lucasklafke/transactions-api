@@ -8,11 +8,11 @@ export class BcryptUtil {
   constructor() {
     this.salt = 10;
   }
-  public encrypt(password: string) {
+  encrypt(password: string) {
     const hash = bcrypt.hashSync(password, this.salt);
     return hash;
   }
-  public decrypt(password: string, hash: string) {
+  decrypt(password: string, hash: string) {
     return bcrypt.compareSync(password, hash);
   }
 }
