@@ -1,26 +1,19 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from '../../prisma/prisma.service';
-import { AccountService } from '../account/account.service';
-import { Prisma } from '@prisma/client';
-import { User } from './entities/user.entity';
 import { BcryptUtil } from '../../utils/bcrypt.util';
+import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private prisma: PrismaService,
-    private readonly accountService: AccountService,
     private readonly bcrypt: BcryptUtil,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const verifyUsernameAlreadyExist = await this.prisma.user.findUnique({
-      where: {
-        username: createUserDto.username,
-      },
-    });
+    const verifyUsernameAlreadyExist =
+      await this.usersRepository.findByUsername(createUserDto.username);
 
     if (verifyUsernameAlreadyExist) {
       throw new HttpException(
@@ -32,42 +25,20 @@ export class UsersService {
     const hashedPassword = this.bcrypt.encrypt(createUserDto.password);
     createUserDto.password = hashedPassword;
 
-    const createAccountAndUser = await this.prisma.$transaction(
-      async (prisma) => {
-        return await this.prisma.account.create({
-          data: {
-            balance: 100,
-            User: {
-              connectOrCreate: {
-                where: {
-                  username: createUserDto.username,
-                },
-                create: {
-                  username: createUserDto.username,
-                  password: createUserDto.password,
-                },
-              },
-            },
-          },
-          include: {
-            User: true,
-          },
-        });
-      },
-    );
+    const createAccountAndUser =
+      await this.usersRepository.createUserAndAccount(createUserDto);
     return createAccountAndUser;
   }
 
   findAll() {
-    return this.prisma.user.findMany({});
+    return this.usersRepository.findMany();
+  }
+  findOneByUsername(username: string) {
+    return this.usersRepository.findByUsername(username);
   }
 
-  findOne(id: number) {
-    const user = this.prisma.user.findUnique({
-      where: {
-        id: id,
-      },
-    });
+  async findOne(id: number) {
+    const user = await this.usersRepository.findById(id);
     if (!user)
       throw new HttpException(
         `User ${id} does not exist`,
@@ -76,52 +47,25 @@ export class UsersService {
     return user;
   }
 
-  async findOneByUsername(username: string) {
-    return await this.prisma.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
-  }
-
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: id,
-      },
-    });
+    const user = await this.usersRepository.findById(id);
     if (!user)
       throw new HttpException(`User ${id} not found`, HttpStatus.NOT_FOUND);
-    const verifyUsernameAlreadyExist = this.prisma.user.findUnique({
-      where: {
-        username: updateUserDto.username,
-      },
-    });
+    const verifyUsernameAlreadyExist = this.usersRepository.findByUsername(
+      updateUserDto.username,
+    );
     if (verifyUsernameAlreadyExist)
       throw new HttpException(
         `Username ${updateUserDto.username} already exists`,
         HttpStatus.CONFLICT,
       );
 
-    return this.prisma.user.update({
-      where: {
-        id: id,
-      },
-      data: updateUserDto,
-    });
+    return this.usersRepository.update(id, updateUserDto);
   }
 
   async remove(id: number) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: id,
-      },
-    });
+    const user = await this.usersRepository.findById(id);
     if (!user) throw new HttpException(`User ${id} does not exist`, 404);
-    return this.prisma.user.delete({
-      where: {
-        id: id,
-      },
-    });
+    return this.usersRepository.delete(id);
   }
 }
