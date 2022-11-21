@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '../../prisma/prisma.service';
+import { AccountRepository } from './account.repository';
 import { AccountService } from './account.service';
 
 describe('AccountService', () => {
-  let service: AccountService;
-
+  let accountService: AccountService;
+  let accountRepository: AccountRepository;
   const fakeAccount = [
     {
       id: 1,
       balance: 100,
     },
   ];
-  const prismaMock = {
+  const RepositoryMock = {
     create: jest.fn().mockReturnValue(fakeAccount[0]),
     findMany: jest.fn().mockReturnValue(fakeAccount),
     findUnique: jest.fn().mockReturnValue(fakeAccount[0]),
@@ -25,14 +25,27 @@ describe('AccountService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AccountService,
-        { provide: PrismaService, useValue: prismaMock },
+        {
+          provide: AccountRepository,
+          useValue: {
+            create: jest.fn(),
+            findMany: jest.fn(),
+            findUnique: jest.fn(),
+            update: jest.fn(),
+            delete: jest.fn(),
+            findOne: jest.fn(),
+            findAll: jest.fn(),
+            remove: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
-    service = module.get<AccountService>(AccountService);
+    accountService = module.get<AccountService>(AccountService);
+    accountRepository = module.get<AccountRepository>(AccountRepository);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(accountService).toBeDefined();
   });
 });
