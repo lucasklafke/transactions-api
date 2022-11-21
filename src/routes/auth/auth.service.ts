@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { BcryptUtil } from '../../utils/bcrypt.util';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,7 @@ export class AuthService {
     let user: User;
     try {
       user = await this.UsersService.findOneByUsername(username);
+      if (!user) return null;
     } catch (error) {
       return null;
     }

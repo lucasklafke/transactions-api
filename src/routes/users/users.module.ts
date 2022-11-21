@@ -5,6 +5,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AccountService } from 'src/routes/account/account.service';
 import { BcryptUtil } from 'src/utils/bcrypt.util';
 import { UsersRepository } from './users.repository';
+import { AccountRepository } from '../account/account.repository';
 
 @Module({
   controllers: [UsersController],
@@ -14,6 +15,7 @@ import { UsersRepository } from './users.repository';
     AccountService,
     BcryptUtil,
     UsersRepository,
+    AccountRepository,
   ],
 })
 export class UsersModule {}

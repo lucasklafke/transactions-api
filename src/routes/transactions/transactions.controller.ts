@@ -8,10 +8,14 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
+  UseGuards,
+  Req,
+  Logger,
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { CreateTransferDto } from './dto/create-transfer.dto';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -19,8 +23,12 @@ export class TransactionsController {
 
   @Post()
   @HttpCode(200)
-  transfer(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionsService.transfer(createTransactionDto);
+  @UseGuards(AuthGuard('jwt'))
+  transfer(@Body() createTransactionDto: CreateTransferDto, @Req() req: any) {
+    return this.transactionsService.transfer(
+      req.user.userId,
+      createTransactionDto,
+    );
   }
 
   @Get()

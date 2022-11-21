@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { BcryptUtil } from '../../utils/bcrypt.util';
@@ -34,6 +34,8 @@ export class UsersService {
     return this.usersRepository.findMany();
   }
   findOneByUsername(username: string) {
+    Logger.log(`1234 ${username}`);
+
     return this.usersRepository.findByUsername(username);
   }
 
