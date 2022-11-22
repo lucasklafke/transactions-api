@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Req } from '@nestjs/common';
@@ -28,7 +29,11 @@ export class AccountController {
   @UseGuards(AuthGuard('jwt'))
   @Get()
   findAll() {
-    return this.accountService.findAll();
+    throw new HttpException(
+      'you can not see others account',
+      HttpStatus.UNAUTHORIZED,
+    );
+    // return this.accountService.findAll();
   }
 
   @UseGuards(AuthGuard('jwt'))
