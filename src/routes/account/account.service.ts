@@ -1,4 +1,4 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { AccountRepository } from './account.repository';
 import { Account } from './entities/account.entity';
 

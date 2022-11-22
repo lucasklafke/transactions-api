@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BcryptUtil } from '../../utils/bcrypt.util';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';

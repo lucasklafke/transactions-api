@@ -7,12 +7,12 @@ import {
   Param,
   Delete,
   UseGuards,
+  HttpException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Req } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { CreateAccountDto } from './dto/create-account.dto';
-import { UpdateAccountDto } from './dto/update-account.dto';
 
 @Controller('account')
 export class AccountController {
@@ -22,6 +22,7 @@ export class AccountController {
   @UseGuards(AuthGuard('jwt'))
   create(@Body() createAccountDto: CreateAccountDto) {
     // #todo
+    throw new HttpException('route not implemented', 500);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -37,18 +38,9 @@ export class AccountController {
     return { balance: balance };
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.accountService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAccountDto: UpdateAccountDto) {
-    return this.accountService.update(+id, updateAccountDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.accountService.remove(+id);
   }
 }

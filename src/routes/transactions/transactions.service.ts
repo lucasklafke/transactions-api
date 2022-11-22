@@ -1,11 +1,11 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { AccountService } from '../account/account.service';
 import { UsersService } from '../users/users.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { CreateTransferDto } from './dto/create-transfer.dto';
 import { FilterDto } from './dto/filter.dto';
 import { TransferDto } from './dto/transfer.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { Transaction } from './entities/transaction.entity';
 import { TransactionRepository } from './transaction.repository';
 
 @Injectable()
@@ -20,11 +20,10 @@ export class TransactionsService {
     const debitedAccount = await this.accountService.findAccountByUserId(
       userId,
     );
+    if (!debitedAccount)
+      throw new HttpException('CreditedAccount not found', 404);
     if (debitedAccount.balance < createTransactionDto.value) {
-      throw new HttpException(
-        `balance insufficient, balance: ${debitedAccount.balance} \n value: ${createTransactionDto.value}`,
-        409,
-      );
+      throw new HttpException(`insufficient balance`, 409);
     }
 
     const userToCredit = await this.userService.findOneByUsername(
@@ -58,8 +57,12 @@ export class TransactionsService {
     return this.transactionRepository.transfer(transferDto);
   }
 
-  create(data: CreateTransactionDto) {
-    return this.transactionRepository.create(data);
+  async create(data: CreateTransactionDto) {
+    const transaction = await this.transactionRepository.create(data);
+    if (!transaction)
+      throw new HttpException('error creating transaction', 500);
+
+    return transaction;
   }
 
   async findAll(userId: number, filter: FilterDto) {
@@ -71,7 +74,6 @@ export class TransactionsService {
         await this.transactionRepository.findAllCashIn(account.id, filter.date),
       );
     } else if (filter.cashOut !== 'false') {
-      Logger.log('entrei');
       cashOutTransactions.push(
         await this.transactionRepository.findAllCashout(
           account.id,
@@ -81,19 +83,20 @@ export class TransactionsService {
     } else {
       return this.transactionRepository.findAll(account.id);
     }
+
     const transactions = [...cashInTransactions, ...cashOutTransactions];
+    if (transactions.length === 0) {
+      throw new HttpException('transactions not found', 404);
+    }
     return transactions;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} transaction`;
-  }
+  async findOne(id: number) {
+    const transaction: Transaction = await this.transactionRepository.findOne(
+      id,
+    );
+    if (!transaction) throw new HttpException('transaction not found', 404);
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} transaction`;
+    return transaction;
   }
 }

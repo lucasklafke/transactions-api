@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TransferDto } from './dto/transfer.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { Transaction } from './entities/transaction.entity';
 @Injectable()
@@ -70,6 +70,14 @@ export class TransactionRepository {
         createdAt: {
           gte: new Date(date),
         },
+      },
+    });
+  }
+
+  findOne(id: number) {
+    return this.PrismaService.transaction.findUnique({
+      where: {
+        id,
       },
     });
   }
