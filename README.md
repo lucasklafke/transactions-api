@@ -19,14 +19,87 @@
     <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
   <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# Transaction Api
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project was made to transfer money to someone registered in the database
 
-## Installation
+
+## Routes
+    
+## Users route ->
+#### description
+- You can register your own account giving your username and a valid password!
+Note: your username is unique in our database.
+
+-   ### POST: localhost:5000/users/create
+    - access this endpoint givin your infos to create your account
+    Note: when created, we'll automatically create your account with balance = 100
+-   ### GET: localhost:5000/users
+    - access this endpoint to see all users registered in our database 
+    Note: this route is authenticated you have to login first and give us your token
+
+-   ### GET: localhost:5000/users/<id>
+    - access this endpoint to see an especific user registered in our database 
+    Note: this route is authenticated you have to login first and give us your token
+
+-   ### DELETE: localhost:5000/users/<id>
+    - access this endpoint to DELETE YOUR USER registered in our database 
+    Note: this route is authenticated you have to login first and give us your token
+
+-   ### PATCH: localhost:5000/users/<id>
+    - access this endpoint to UPDATE YOUR USER registered in our database 
+    Note: this route is authenticated you have to login first and give us your token
+## Account route ->
+#### description
+- You can made transactions with your account, it started with balance = 100!
+Note: All routes are protected with authentication, you must login and give us your token 
+
+-   ### POST: localhost:5000/account/create
+    - #### this endpoint are no implemented yet, once your account are automatically created
+
+-   ### GET: localhost:5000/account
+    - access this endpoint to see all users registered in our database 
+    Note: this route is private you can't access with a normal token
+
+-   ### GET: localhost:5000/account/balance
+    - access this endpoint to see the account balance from your token 
+    Note: this route is authenticated you have to login first and give us your token
+
+-   ### GET: localhost:5000/account/<id>
+    - access this endpoint to see the account from your token 
+    Note: this route is authenticated you have to login first and give us your token
+
+## Transactions route ->
+#### description
+- You can made transfers and see them with this route!
+Note: All routes are protected with authentication, you must login and give us your token 
+
+-   ### POST: localhost:5000/transactions
+    - #### access this endpoint to transfer to someone, you have to give a body containing the username of account you want to transfer and how much money you want to transfer
+    Note: this route is authenticated you have to login first and give us your token
+    ###
+    Example: 
+    ####
+        {
+            "value": 50,
+            "usernameToCredit": "username3"
+        }
+    ###
+-   ### GET: localhost:5000/transactions
+    - Access this endpoint to see all transactions made that you have access(your cash-in and cash-out transactions)
+    - This route accept some query params like ->
+        - cash-out ex: true
+        - cash-in ex: true
+        - date ex: mm/dd/yyyy 
+        - examples 
+            - localhost:5000/transactions?cash-in=true&date=11-21-2022
+            - localhost:5000/transactions?date=11-21-2022
+            - localhost:5000/transactions?cash-in=true&cash-out=true&date=11-21-2022
+
+    Note: this route is authenticated you have to login first and give us your token
+
+## Installation 
 
 ```bash
 $ npm install
@@ -44,6 +117,10 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+### You also can do this with docker
+```bash
+$ docker-compopose up --build
+```
 
 ## Test
 
@@ -57,18 +134,3 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
-# ng.cash
