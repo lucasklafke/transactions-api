@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { TransferDto } from './dto/transfer.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { Transaction } from '@prisma/client';
+import { Transaction } from './entities/transaction.entity';
 @Injectable()
 export class TransactionRepository {
   constructor(private readonly PrismaService: PrismaService) {}
@@ -45,7 +45,32 @@ export class TransactionRepository {
     });
   }
 
-  getManyTransactions() {
-    return this.PrismaService.transaction.findMany({});
+  findAll(accountId: number) {
+    return this.PrismaService.transaction.findMany({
+      where: {
+        creditedAccountId: accountId,
+        debitedAccountId: accountId,
+      },
+    });
+  }
+  findAllCashout(accountId: number, date: string) {
+    return this.PrismaService.transaction.findMany({
+      where: {
+        debitedAccountId: accountId,
+        createdAt: {
+          gte: new Date(date),
+        },
+      },
+    });
+  }
+  findAllCashIn(accountId: number, date: string) {
+    return this.PrismaService.transaction.findMany({
+      where: {
+        creditedAccountId: accountId,
+        createdAt: {
+          gte: new Date(date),
+        },
+      },
+    });
   }
 }

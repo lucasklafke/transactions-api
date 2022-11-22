@@ -1,8 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { CreateAccountDto } from './dto/create-account.dto';
+import { Injectable } from '@nestjs/common';
 import { UpdateAccountDto } from './dto/update-account.dto';
-import { PrismaService } from '../../prisma/prisma.service';
-import { Account, Prisma } from '@prisma/client';
 import { AccountRepository } from './account.repository';
 
 @Injectable()
@@ -15,13 +12,11 @@ export class AccountService {
 
   async getBalance(id: number) {
     const account = await this.acocuntRepository.findByUserId(id);
-    Logger.log(account);
     return account;
   }
 
   async findAccountByUserId(userId: number) {
     const account = await this.acocuntRepository.findByUserId(userId);
-    Logger.log('userauihauih', account);
     return account.Account;
   }
 

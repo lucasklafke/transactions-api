@@ -10,7 +10,7 @@ import {
   HttpCode,
   UseGuards,
   Req,
-  Logger,
+  Query,
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
@@ -32,8 +32,33 @@ export class TransactionsController {
   }
 
   @Get()
-  findAll() {
-    return this.transactionsService.findAll();
+  @UseGuards(AuthGuard('jwt'))
+  findAll(
+    @Query('cash-out') cashOut: string,
+    @Query('cash-in') cashIn: string,
+    @Query('date') date: string,
+    @Req() req: any,
+  ) {
+    const user = req.user;
+    const filter = {
+      date: '11/21/2022',
+      cashOut: 'false',
+      cashIn: 'false',
+    };
+    if (date) {
+      const regexDate =
+        /^(0[1-9]|1[0-2])|{\/-\-}(0[1-9]|1\d|2\d|3[01])|{\/-\-}(19|20)\d{2}$/;
+      if (regexDate.test(date)) {
+        filter.date = date;
+      }
+    }
+    if (cashOut) {
+      filter.cashOut = 'true';
+    }
+    if (cashIn) {
+      filter.cashIn = 'true';
+    }
+    return this.transactionsService.findAll(user.id, filter);
   }
 
   @Get(':id')

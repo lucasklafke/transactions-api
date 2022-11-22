@@ -1,4 +1,4 @@
-import { Account } from '@prisma/client';
+import { Account } from 'src/routes/account/entities/account.entity';
 
 export class TransferDto {
   debitedAccount: Account;

@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Logger,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Req } from '@nestjs/common';
@@ -34,7 +33,6 @@ export class AccountController {
   @UseGuards(AuthGuard('jwt'))
   @Get('balance')
   async getBalance(@Req() req: any) {
-    Logger.log('aa', req.user.userId);
     const { Account } = await this.accountService.getBalance(req.user.userId);
     return { balance: Account.balance };
   }

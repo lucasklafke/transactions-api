@@ -3,6 +3,7 @@ import { AccountService } from '../account/account.service';
 import { UsersService } from '../users/users.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { CreateTransferDto } from './dto/create-transfer.dto';
+import { FilterDto } from './dto/filter.dto';
 import { TransferDto } from './dto/transfer.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionRepository } from './transaction.repository';
@@ -60,8 +61,28 @@ export class TransactionsService {
   create(data: CreateTransactionDto) {
     return this.transactionRepository.create(data);
   }
-  findAll() {
-    return `This action returns all transactions`;
+
+  async findAll(userId: number, filter: FilterDto) {
+    const account = await this.accountService.findAccountByUserId(userId);
+    const cashInTransactions = [];
+    const cashOutTransactions = [];
+    if (filter.cashIn !== 'false') {
+      cashInTransactions.push(
+        await this.transactionRepository.findAllCashIn(account.id, filter.date),
+      );
+    } else if (filter.cashOut !== 'false') {
+      Logger.log('entrei');
+      cashOutTransactions.push(
+        await this.transactionRepository.findAllCashout(
+          account.id,
+          filter.date,
+        ),
+      );
+    } else {
+      return this.transactionRepository.findAll(account.id);
+    }
+    const transactions = [...cashInTransactions, ...cashOutTransactions];
+    return transactions;
   }
 
   findOne(id: number) {
