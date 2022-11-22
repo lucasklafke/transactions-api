@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { UpdateAccountDto } from './dto/update-account.dto';
-import { Account } from './entities/account.entity';
 
 @Injectable()
 export class AccountRepository {
@@ -30,7 +28,7 @@ export class AccountRepository {
     return this.PrismaService.account.findMany({});
   }
 
-  update(id: number, updateUserDto: UpdateAccountDto) {
+  update(id: number, updateUserDto: any) {
     this.PrismaService.user.update({
       where: {
         id: id,

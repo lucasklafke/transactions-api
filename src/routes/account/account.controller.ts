@@ -33,8 +33,8 @@ export class AccountController {
   @UseGuards(AuthGuard('jwt'))
   @Get('balance')
   async getBalance(@Req() req: any) {
-    const { Account } = await this.accountService.getBalance(req.user.userId);
-    return { balance: Account.balance };
+    const balance = await this.accountService.getBalance(req.user.userId);
+    return { balance: balance };
   }
 
   @Get(':id')

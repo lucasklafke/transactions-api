@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { UpdateAccountDto } from './dto/update-account.dto';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { AccountRepository } from './account.repository';
+import { Account } from './entities/account.entity';
 
 @Injectable()
 export class AccountService {
@@ -12,23 +12,19 @@ export class AccountService {
 
   async getBalance(id: number) {
     const account = await this.acocuntRepository.findByUserId(id);
-    return account;
+    if (!account) throw new HttpException('account not found', 404);
+    return account.Account.balance;
   }
 
   async findAccountByUserId(userId: number) {
     const account = await this.acocuntRepository.findByUserId(userId);
+    if (!account) throw new HttpException('account not found', 404);
     return account.Account;
   }
 
   findOne(id: number) {
-    return this.acocuntRepository.findById(id);
-  }
-
-  update(id: number, updateAccountDto: UpdateAccountDto) {
-    return this.acocuntRepository.update(id, updateAccountDto);
-  }
-
-  remove(id: number) {
-    return this.acocuntRepository.delete(id);
+    const account = this.acocuntRepository.findById(id);
+    if (!account) throw new HttpException('account not found', 404);
+    return account;
   }
 }
